@@ -1,0 +1,79 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - link "Flick Court home" [ref=e4] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=e5]: F
+      - generic [ref=e6]: FLICKCOURT
+    - generic [ref=e7]: LOCAL PHYSICS LAB
+    - button "New match" [ref=e9] [cursor=pointer]:
+      - text: New match
+      - generic [aria-hidden] [ref=e10]: ↻
+  - main [ref=e11]:
+    - region "Local match" [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - generic [ref=e15]: NORTH
+          - strong [ref=e17]: "0"
+        - generic [ref=e18]: LOCAL MATCH
+        - generic [ref=e19]:
+          - strong [ref=e20]: "0"
+          - generic [ref=e21]: SOUTH
+      - generic [ref=e23]:
+        - generic "Basketball court. Touch or click the ball in either half, then flick to shoot." [ref=e24]
+        - generic [aria-hidden]: TOUCH BALL / FLICK TO SHOOT
+      - generic [ref=e25]:
+        - generic [ref=e27]: Ball in south half · touch to pick up
+        - generic [ref=e29]: FIRST TO 10
+    - complementary [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - paragraph [ref=e33]: PHYSICS LAB
+          - heading "Tune the feel" [level=1] [ref=e34]
+        - button "Reset" [ref=e35] [cursor=pointer]
+      - paragraph [ref=e36]: Adjust a value, then throw. Changes take effect immediately.
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: Gravity
+            - status [ref=e41]: "520"
+          - generic [ref=e42]: Flight arc and hang time
+          - slider "Gravity Flight arc and hang time Floaty Snappy" [ref=e43] [cursor=pointer]: "520"
+          - generic [ref=e44]:
+            - generic [ref=e45]: Floaty
+            - generic [ref=e46]: Snappy
+        - generic [ref=e47]:
+          - generic [ref=e48]:
+            - generic [ref=e49]: Flick threshold
+            - status [ref=e50]: "420"
+          - generic [ref=e51]: Speed needed to shoot
+          - slider "Flick threshold Speed needed to shoot Easy Precise" [ref=e52] [cursor=pointer]: "420"
+          - generic [ref=e53]:
+            - generic [ref=e54]: Easy
+            - generic [ref=e55]: Precise
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: Shot power
+            - status [ref=e59]: "1.0"
+          - generic [ref=e60]: How far a flick carries
+          - slider "Shot power How far a flick carries Soft Strong" [ref=e61] [cursor=pointer]: "1"
+          - generic [ref=e62]:
+            - generic [ref=e63]: Soft
+            - generic [ref=e64]: Strong
+        - generic [ref=e65]:
+          - generic [ref=e66]:
+            - generic [ref=e67]: Bounce
+            - status [ref=e68]: "0.34"
+          - generic [ref=e69]: Energy after ground contact
+          - slider "Bounce Energy after ground contact Dead Live" [ref=e70] [cursor=pointer]: "0.34"
+          - generic [ref=e71]:
+            - generic [ref=e72]: Dead
+            - generic [ref=e73]: Live
+      - generic [ref=e74]:
+        - generic [ref=e75]: ↗
+        - generic [ref=e76]: Tap and hold the ball. Flick in the direction you want it to travel.
+      - generic [ref=e77]:
+        - generic [ref=e78]: R
+        - text: Reset match
+  - contentinfo [ref=e79]:
+    - generic [ref=e80]: PHASE 01 / LOCAL PLAY
+    - generic [ref=e81]: Ball flight · bounce · touch response

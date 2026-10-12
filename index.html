@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f1f3ee" />
+    <meta name="description" content="A tactile local basketball game. Grab the ball, find your angle, and flick for the hoop." />
+    <title>Flick Court</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="wordmark" href="#" aria-label="Flick Court home"><span class="brand-mark">F</span><span>FLICK<span class="wordmark-light">COURT</span></span></a>
+        <div class="phase-tag"><span class="live-dot"></span>LOCAL PHYSICS LAB</div>
+        <button class="reset-button" id="new-game" type="button" title="Start a new match">New match <span aria-hidden="true">↻</span></button>
+      </header>
+
+      <main class="workspace">
+        <section class="game-column" aria-label="Local match">
+          <div class="score-header">
+            <div class="team-score team-north">
+              <span class="team-name"><span class="team-dot"></span>NORTH</span>
+              <strong id="north-score">0</strong>
+            </div>
+            <div class="match-state" id="match-state" aria-live="polite">READY TO PLAY</div>
+            <div class="team-score team-south">
+              <strong id="south-score">0</strong>
+              <span class="team-name">SOUTH<span class="team-dot"></span></span>
+            </div>
+          </div>
+          <div class="court-frame">
+            <canvas id="court" aria-label="Basketball court. Touch or click the ball in either half, then flick to shoot."></canvas>
+            <div class="court-hint" id="court-hint" aria-hidden="true">TOUCH BALL  /  FLICK TO SHOOT</div>
+          </div>
+          <div class="match-footer">
+            <span class="status-light"></span><span id="interaction-hint">Pick up the ball on your side</span>
+            <span class="footer-divider"></span><span>FIRST TO 10</span>
+          </div>
+        </section>
+
+        <aside class="tuning-panel" aria-labelledby="tuning-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PHYSICS LAB</p>
+              <h1 id="tuning-title">Tune the feel</h1>
+            </div>
+            <button class="reset-tuning" id="reset-tuning" type="button" title="Reset physics values">Reset</button>
+          </div>
+          <p class="panel-copy">Adjust a value, then throw. Changes take effect immediately.</p>
+          <div class="tuning-controls">
+            <label class="tuning-control" for="gravity">
+              <span class="control-heading"><span>Gravity</span><output id="gravity-value">520</output></span>
+              <span class="control-description">Flight arc and hang time</span>
+              <input id="gravity" type="range" min="260" max="900" step="10" value="520" />
+              <span class="range-labels"><span>Floaty</span><span>Snappy</span></span>
+            </label>
+            <label class="tuning-control" for="flick-threshold">
+              <span class="control-heading"><span>Flick threshold</span><output id="flick-threshold-value">420</output></span>
+              <span class="control-description">Speed needed to shoot</span>
+              <input id="flick-threshold" type="range" min="180" max="900" step="10" value="420" />
+              <span class="range-labels"><span>Easy</span><span>Precise</span></span>
+            </label>
+            <label class="tuning-control" for="shot-power">
+              <span class="control-heading"><span>Shot power</span><output id="shot-power-value">1.0</output></span>
+              <span class="control-description">How far a flick carries</span>
+              <input id="shot-power" type="range" min="0.55" max="1.65" step="0.05" value="1" />
+              <span class="range-labels"><span>Soft</span><span>Strong</span></span>
+            </label>
+            <label class="tuning-control" for="bounce">
+              <span class="control-heading"><span>Bounce</span><output id="bounce-value">0.34</output></span>
+              <span class="control-description">Energy after ground contact</span>
+              <input id="bounce" type="range" min="0.08" max="0.72" step="0.02" value="0.34" />
+              <span class="range-labels"><span>Dead</span><span>Live</span></span>
+            </label>
+          </div>
+          <div class="tuning-note"><span class="note-symbol">↗</span><span>Tap and hold the ball. Flick in the direction you want it to travel.</span></div>
+          <div class="keyboard-note"><span class="keycap">R</span> Reset match</div>
+        </aside>
+      </main>
+      <footer class="site-footer"><span>PHASE 01 <span class="footer-separator">/</span> LOCAL PLAY</span><span>Ball flight · bounce · touch response</span></footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
