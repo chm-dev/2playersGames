@@ -18,11 +18,12 @@ describe('court rules', () => {
   });
 
   it('awards only a valid pass through the opponent hoop', () => {
-    expect(scoreAtGoal(940, 960, COURT.centerX, 60, 'north')).toBe('north');
-    expect(scoreAtGoal(60, 40, COURT.centerX, 60, 'south')).toBe('south');
-    expect(scoreAtGoal(940, 960, 80, 60, 'north')).toBeNull();
-    expect(scoreAtGoal(940, 960, COURT.centerX, 12, 'north')).toBeNull();
-    expect(scoreAtGoal(940, 960, COURT.centerX, 60, 'south')).toBeNull();
+    expect(scoreAtGoal(COURT.centerX, COURT.hoopBottomY, 60, -10, 'north')).toBe('north');
+    expect(scoreAtGoal(COURT.centerX, COURT.hoopTopY, 60, -10, 'south')).toBe('south');
+    expect(scoreAtGoal(COURT.centerX + COURT.hoopScoreRadius + 1, COURT.hoopBottomY, 60, -10, 'north')).toBeNull();
+    expect(scoreAtGoal(COURT.centerX, COURT.hoopBottomY, 60, 10, 'north')).toBeNull();
+    expect(scoreAtGoal(COURT.centerX, COURT.hoopBottomY, 10, -10, 'north')).toBeNull();
+    expect(scoreAtGoal(COURT.centerX, COURT.hoopBottomY, 60, -10, 'south')).toBeNull();
   });
 });
 
@@ -78,6 +79,32 @@ describe('local touch and flick simulation', () => {
     expect(game.state.ball.vx).toBeGreaterThan(0);
   });
 
+  it('keeps a rising ball inside the visible north court edge when it rebounds', () => {
+    const game = new GameSimulation(() => 0.2);
+    const ball = game.state.ball;
+    game.tryGrab({ x: ball.x, y: ball.y });
+    game.moveHeldBall({ x: 100, y: 100 });
+    game.release(0, -900);
+    for (let frame = 0; frame < 30 && game.state.ball.vy < 0; frame += 1) game.tick(1 / 60);
+
+    const reboundBall = game.state.ball;
+    const visualRadius = COURT.ballRadius + Math.min(reboundBall.z * 0.035, 12);
+    expect(reboundBall.y - reboundBall.z - visualRadius).toBeGreaterThanOrEqual(COURT.wallThickness / 2 - 1);
+  });
+
+  it('keeps a rising ball inside the visible south court edge when it rebounds', () => {
+    const game = new GameSimulation(() => 0.2);
+    const ball = game.state.ball;
+    game.tryGrab({ x: ball.x, y: ball.y });
+    game.moveHeldBall({ x: 100, y: 900 });
+    game.release(0, 900);
+    for (let frame = 0; frame < 30 && game.state.ball.vy > 0; frame += 1) game.tick(1 / 60);
+
+    const reboundBall = game.state.ball;
+    const visualRadius = COURT.ballRadius + Math.min(reboundBall.z * 0.035, 12);
+    expect(reboundBall.y - reboundBall.z + visualRadius).toBeLessThanOrEqual(COURT.height - COURT.wallThickness / 2 + 1);
+  });
+
   it('keeps an idle ball on the ground plane', () => {
     const game = new GameSimulation(() => 0.2);
     for (let index = 0; index < 120; index += 1) game.tick(1 / 60);
@@ -89,12 +116,39 @@ describe('local touch and flick simulation', () => {
     const game = new GameSimulation(() => 0.2);
     const ball = game.state.ball;
     game.tryGrab({ x: ball.x, y: ball.y });
-    expect(game.release(0, 900)).toBe('shot');
-    for (let index = 0; index < 140; index += 1) game.tick(1 / 60);
+    game.moveHeldBall({ x: COURT.centerX, y: 519 });
+    expect(game.release(0, 600)).toBe('shot');
+    let visualYAtScore = Number.NaN;
+    for (let index = 0; index < 140; index += 1) {
+      game.tick(1 / 60);
+      if (game.state.score.north > 0 && Number.isNaN(visualYAtScore)) {
+        visualYAtScore = game.state.ball.y - game.state.ball.z;
+      }
+    }
     expect(game.state.score.north).toBe(1);
+    expect(visualYAtScore).toBeGreaterThanOrEqual(COURT.hoopBottomY - COURT.hoopScoreRadius);
+    expect(visualYAtScore).toBeLessThanOrEqual(COURT.hoopBottomY + COURT.hoopScoreRadius);
     expect(game.state.phase).toBe('playing');
     expect(game.state.ball.y).toBeGreaterThan(COURT.halfwayY);
     expect(game.state.ball.flightLocked).toBe(false);
+  });
+
+  it('scores a north-bound shot when it passes the visible hoop plane', () => {
+    const game = new GameSimulation(() => 0.8);
+    const ball = game.state.ball;
+    game.tryGrab({ x: ball.x, y: ball.y });
+    game.moveHeldBall({ x: COURT.centerX, y: 481 });
+    expect(game.release(0, -600)).toBe('shot');
+
+    let visualYAtScore = Number.NaN;
+    for (let frame = 0; frame < 150 && game.state.score.south === 0; frame += 1) {
+      game.tick(1 / 60);
+      if (game.state.score.south > 0) visualYAtScore = game.state.ball.y - game.state.ball.z;
+    }
+
+    expect(game.state.score.south).toBe(1);
+    expect(visualYAtScore).toBeGreaterThanOrEqual(COURT.hoopTopY - COURT.hoopScoreRadius);
+    expect(visualYAtScore).toBeLessThanOrEqual(COURT.hoopTopY + COURT.hoopScoreRadius);
   });
 
   it('ends the local match when either side reaches ten', () => {
@@ -103,7 +157,8 @@ describe('local touch and flick simulation', () => {
       const side = sideAt(game.state.ball.y);
       const ball = game.state.ball;
       expect(game.tryGrab({ x: ball.x, y: ball.y })).toBe(true);
-      game.release(0, side === 'north' ? 900 : -900);
+      game.moveHeldBall({ x: COURT.centerX, y: side === 'north' ? 519 : 481 });
+      game.release(0, side === 'north' ? 600 : -600);
       for (let frame = 0; frame < 120; frame += 1) game.tick(1 / 60);
     }
     expect(Math.max(game.state.score.north, game.state.score.south)).toBe(10);

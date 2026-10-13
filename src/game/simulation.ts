@@ -24,22 +24,19 @@ export function openingBallY(side: Side, fraction = 0.5): number {
 }
 
 export function scoreAtGoal(
-  previousY: number,
-  currentY: number,
   x: number,
-  z: number,
+  visualY: number,
+  height: number,
+  verticalVelocity: number,
   shooter: Side | null,
+  ballRadius = 0,
 ): Side | null {
-  const crossedTop = previousY > COURT.hoopTopY && currentY <= COURT.hoopTopY;
-  const crossedBottom = previousY < COURT.hoopBottomY && currentY >= COURT.hoopBottomY;
-  const inHoop = Math.abs(x - COURT.centerX) <= COURT.hoopScoreWidth
-    && z >= COURT.hoopRimHeight
-    && z <= COURT.hoopMaxHeight;
+  if (shooter === null || verticalVelocity >= 0) return null;
+  if (height + ballRadius < COURT.hoopRimHeight || height - ballRadius > COURT.hoopMaxHeight) return null;
 
-  if (!inHoop || shooter === null) return null;
-  if (crossedTop && shooter === 'south') return 'south';
-  if (crossedBottom && shooter === 'north') return 'north';
-  return null;
+  const hoopY = shooter === 'north' ? COURT.hoopBottomY : COURT.hoopTopY;
+  const distance = Math.hypot(x - COURT.centerX, visualY - hoopY);
+  return distance <= COURT.hoopScoreRadius ? shooter : null;
 }
 
 function makeBall(x: number, y: number): BallState {
@@ -201,6 +198,8 @@ export class GameSimulation {
     const ball = this.state.ball;
     const previousY = ball.y;
     const previousZ = ball.z;
+    const previousVisualY = previousY - previousZ;
+    const previousVisualRadius = COURT.ballRadius + Math.min(previousZ * 0.035, 12);
     Engine.update(this.engine, dt * 1000);
     const position = this.ballBody.position;
     ball.x = position.x;
@@ -229,13 +228,18 @@ export class GameSimulation {
       ball.vz = 0;
     }
 
-    const scorer = scoreAtGoal(previousY, ball.y, ball.x, ball.z, ball.shooter);
+    const visualY = ball.y - ball.z;
+    const visualRadius = COURT.ballRadius + Math.min(ball.z * 0.035, 12);
+    const scorer = ball.flightLocked
+      ? scoreAtGoal(ball.x, visualY, ball.z, ball.vz, ball.shooter, visualRadius)
+      : null;
     if (scorer) {
       this.awardPoint(scorer);
       return;
     }
 
-    this.bounceFromGoalLine(previousY);
+    this.bounceFromGoalLine(previousVisualY);
+    this.bounceFromEndWall(previousVisualY, previousVisualRadius);
     if (ball.z === 0 && Math.abs(ball.vx) + Math.abs(ball.vy) < 5) {
       ball.vx = 0;
       ball.vy = 0;
@@ -243,19 +247,51 @@ export class GameSimulation {
     }
   }
 
-  private bounceFromGoalLine(previousY: number): void {
+  private bounceFromGoalLine(previousVisualY: number): void {
     const ball = this.state.ball;
-    const crossedTop = previousY > COURT.hoopTopY && ball.y <= COURT.hoopTopY;
-    const crossedBottom = previousY < COURT.hoopBottomY && ball.y >= COURT.hoopBottomY;
+    const visualY = ball.y - ball.z;
+    const crossedTop = previousVisualY > COURT.hoopTopY && visualY <= COURT.hoopTopY;
+    const crossedBottom = previousVisualY < COURT.hoopBottomY && visualY >= COURT.hoopBottomY;
     if (!crossedTop && !crossedBottom) return;
     const hoopLane = Math.abs(ball.x - COURT.centerX) <= COURT.hoopGap / 2 - COURT.ballRadius * 0.5;
     if (hoopLane) {
-      const safeY = crossedTop ? COURT.hoopTopY + 1 : COURT.hoopBottomY - 1;
+      const safeY = crossedTop ? COURT.hoopTopY + ball.z + 1 : COURT.hoopBottomY + ball.z - 1;
       ball.y = safeY;
       ball.vy = -ball.vy * COURT.wallBounce;
       Body.setPosition(this.ballBody, { x: ball.x, y: safeY });
       Body.setVelocity(this.ballBody, { x: ball.vx / MATTER_TICKS_PER_SECOND, y: ball.vy / MATTER_TICKS_PER_SECOND });
     }
+  }
+
+  private bounceFromEndWall(
+    previousVisualY: number,
+    previousVisualRadius: number,
+  ): void {
+    const ball = this.state.ball;
+    const visualY = ball.y - ball.z;
+    const visualRadius = COURT.ballRadius + Math.min(ball.z * 0.035, 12);
+    const segmentWidth = (COURT.width - COURT.hoopGap) / 2;
+    const touchesEndSegment = ball.x - visualRadius < segmentWidth
+      || ball.x + visualRadius > COURT.width - segmentWidth;
+    if (!touchesEndSegment) return;
+
+    const northEdge = COURT.wallThickness / 2;
+    const southEdge = COURT.height - northEdge;
+    const crossedNorth = previousVisualY - previousVisualRadius >= northEdge
+      && visualY - visualRadius < northEdge;
+    const crossedSouth = previousVisualY + previousVisualRadius <= southEdge
+      && visualY + visualRadius > southEdge;
+    if (crossedNorth && ball.vy < 0) {
+      ball.y = northEdge + visualRadius + ball.z;
+      ball.vy = Math.abs(ball.vy) * COURT.wallBounce;
+    } else if (crossedSouth && ball.vy > 0) {
+      ball.y = southEdge - visualRadius + ball.z;
+      ball.vy = -Math.abs(ball.vy) * COURT.wallBounce;
+    } else {
+      return;
+    }
+    Body.setPosition(this.ballBody, { x: ball.x, y: ball.y });
+    Body.setVelocity(this.ballBody, { x: ball.vx / MATTER_TICKS_PER_SECOND, y: ball.vy / MATTER_TICKS_PER_SECOND });
   }
 
   private awardPoint(side: Side): void {
@@ -294,18 +330,11 @@ export class GameSimulation {
   }
 
   private addCourtWalls(): void {
-    const wall = 36;
+    const wall = COURT.wallThickness;
     const sideWalls = [
       Bodies.rectangle(-wall / 2, COURT.height / 2, wall, COURT.height + wall * 2, { isStatic: true, restitution: COURT.wallBounce, friction: 0 }),
       Bodies.rectangle(COURT.width + wall / 2, COURT.height / 2, wall, COURT.height + wall * 2, { isStatic: true, restitution: COURT.wallBounce, friction: 0 }),
     ];
-    const segmentWidth = (COURT.width - COURT.hoopGap) / 2;
-    const endWalls = [
-      Bodies.rectangle(segmentWidth / 2, 0, segmentWidth, wall, { isStatic: true, restitution: COURT.wallBounce, friction: 0 }),
-      Bodies.rectangle(COURT.width - segmentWidth / 2, 0, segmentWidth, wall, { isStatic: true, restitution: COURT.wallBounce, friction: 0 }),
-      Bodies.rectangle(segmentWidth / 2, COURT.height, segmentWidth, wall, { isStatic: true, restitution: COURT.wallBounce, friction: 0 }),
-      Bodies.rectangle(COURT.width - segmentWidth / 2, COURT.height, segmentWidth, wall, { isStatic: true, restitution: COURT.wallBounce, friction: 0 }),
-    ];
-    Composite.add(this.engine.world, [...sideWalls, ...endWalls]);
+    Composite.add(this.engine.world, sideWalls);
   }
 }

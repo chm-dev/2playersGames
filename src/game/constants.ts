@@ -8,10 +8,11 @@ export const COURT = {
   hoopTopY: 48,
   hoopBottomY: 952,
   hoopGap: 138,
-  hoopScoreWidth: 48,
+  hoopScoreRadius: 18,
   hoopRimHeight: 28,
   hoopMaxHeight: 112,
   ballRadius: 23,
+  wallThickness: 36,
   wallBounce: 0.84,
 } as const;
 
