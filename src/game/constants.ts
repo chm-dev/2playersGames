@@ -1,17 +1,17 @@
 import type { PhysicsTuning } from './types';
 
 export const COURT = {
-  width: 600,
+  width: 450,
   height: 1000,
-  centerX: 300,
+  centerX: 225,
   halfwayY: 500,
   hoopTopY: 48,
   hoopBottomY: 952,
-  hoopGap: 138,
-  hoopScoreRadius: 18,
+  hoopGap: 104,
+  hoopScoreRadius: 14,
   hoopRimHeight: 28,
   hoopMaxHeight: 112,
-  ballRadius: 23,
+  ballRadius: 40,
   wallThickness: 36,
   wallBounce: 0.84,
 } as const;

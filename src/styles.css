@@ -59,7 +59,7 @@ button { color: inherit; }
 .team-dot { width: 8px; height: 8px; background: var(--coral); border-radius: 50%; }
 .team-south .team-dot { background: var(--sky); }
 .match-state { padding: 6px 9px; border: 1px solid #d8ded6; border-radius: 2px; color: #758078; background: rgba(255,255,255,.55); font-size: 8px; font-weight: 800; letter-spacing: .1em; white-space: nowrap; }
-.court-frame { position: relative; width: min(100%, 420px); margin: auto; overflow: hidden; border: 5px solid #293d35; border-radius: 5px; background: var(--court); box-shadow: 0 12px 30px rgba(36, 53, 44, .18), 0 2px 4px rgba(36, 53, 44, .14); aspect-ratio: 3 / 5; }
+.court-frame { position: relative; width: min(100%, 420px); margin: auto; overflow: hidden; border: 5px solid #293d35; border-radius: 5px; background: #204568; box-shadow: 0 12px 30px rgba(36, 53, 44, .18), 0 2px 4px rgba(36, 53, 44, .14); aspect-ratio: 9 / 20; }
 #court { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
 #court:active { cursor: grabbing; }
 .court-hint { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); padding: 6px 8px; color: rgba(255,255,255,.9); background: rgba(31,56,46,.6); border-radius: 2px; font-size: 8px; font-weight: 700; letter-spacing: .09em; pointer-events: none; white-space: nowrap; }
@@ -95,23 +95,23 @@ input[type='range']::-moz-range-thumb { width: 10px; height: 10px; border: 2px s
 
 @media (min-width: 900px) and (min-height: 720px) {
   .workspace { padding-top: 10px; padding-bottom: 10px; }
-  .court-frame { width: min(100%, calc((100dvh - 230px) * .6)); }
+  .court-frame { width: min(100%, calc((100dvh - 230px) * .45)); }
 }
 
 @media (max-width: 760px) {
   html, body, #app { width: 100%; height: 100%; }
   html, body { overflow: hidden; overscroll-behavior: none; }
-  body { min-height: 0; background: var(--court-deep); }
+  body { min-height: 0; background: #173957; }
   #app { min-height: 0; }
   .topbar, .match-footer, .site-footer { display: none; }
   .workspace { width: 100%; height: 100vh; height: 100dvh; margin: 0; padding: 0; display: block; }
   .game-column { width: 100%; height: 100%; }
-  .score-header { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); left: 12px; display: flex; justify-content: space-between; width: calc(100% - 72px); margin: 0; pointer-events: none; }
+  .score-header { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; justify-content: space-between; width: min(calc(45dvh - 24px), calc(100vw - 72px)); margin: 0; pointer-events: none; }
   .team-score { gap: 7px; }
   .team-score strong { color: #fffdf5; font-size: 32px; text-shadow: 0 1px 5px rgba(18, 43, 34, .45); }
   .team-name { color: rgba(255, 255, 255, .9); font-size: 9px; }
   .match-state { display: none; }
-  .court-frame { position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; margin: 0; border: 0; border-radius: 0; box-shadow: none; aspect-ratio: auto; }
+  .court-frame { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: min(100vw, 45dvh); height: min(100dvh, 222.222vw); min-width: 0; margin: 0; border: 0; border-radius: 0; box-shadow: none; aspect-ratio: auto; }
   #court { touch-action: none; }
   .court-hint { bottom: max(16px, env(safe-area-inset-bottom)); }
   .mobile-settings-button { position: absolute; z-index: 3; top: max(12px, env(safe-area-inset-top)); right: 12px; display: grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 2px solid rgba(255, 255, 255, .9); border-radius: 50%; color: #fffdf5; background: #d94c42; box-shadow: 0 2px 10px rgba(20, 36, 28, .35); font-size: 21px; line-height: 1; cursor: pointer; touch-action: manipulation; }

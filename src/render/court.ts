@@ -19,39 +19,16 @@ function roundRectPath(ctx: CanvasRenderingContext2D, x: number, y: number, widt
 
 function drawCourtMarkings(ctx: CanvasRenderingContext2D): void {
   ctx.save();
-  ctx.strokeStyle = 'rgba(244, 247, 235, 0.7)';
-  ctx.lineWidth = 3;
-  ctx.setLineDash([]);
+  ctx.strokeStyle = 'rgba(248, 249, 244, .92)';
+  ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(COURT_EDGE, COURT.halfwayY);
   ctx.lineTo(COURT.width - COURT_EDGE, COURT.halfwayY);
   ctx.stroke();
   ctx.beginPath();
-  ctx.arc(COURT.centerX, COURT.halfwayY, 86, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(COURT.centerX, COURT.halfwayY, 7, 0, Math.PI * 2);
+  ctx.arc(COURT.centerX, COURT.halfwayY, 12, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(248, 249, 237, .82)';
   ctx.fill();
-
-  const keyWidth = 218;
-  const keyDepth = 150;
-  const topKeyY = COURT_EDGE;
-  const bottomKeyY = COURT.height - COURT_EDGE - keyDepth;
-  ctx.strokeRect(COURT.centerX - keyWidth / 2, topKeyY, keyWidth, keyDepth);
-  ctx.strokeRect(COURT.centerX - keyWidth / 2, bottomKeyY, keyWidth, keyDepth);
-  ctx.beginPath();
-  ctx.arc(COURT.centerX, topKeyY + keyDepth, 69, 0, Math.PI);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(COURT.centerX, bottomKeyY, 69, Math.PI, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(COURT.centerX, COURT.hoopTopY, 180, 0.12, Math.PI - 0.12);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(COURT.centerX, COURT.hoopBottomY, 180, Math.PI + 0.12, Math.PI * 2 - 0.12);
-  ctx.stroke();
   ctx.restore();
 }
 
@@ -63,18 +40,18 @@ function drawHoop(ctx: CanvasRenderingContext2D, side: Side): void {
   ctx.strokeStyle = 'rgba(247, 248, 235, .9)';
   ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.moveTo(COURT.centerX - 37, backboardY);
-  ctx.lineTo(COURT.centerX + 37, backboardY);
+  ctx.moveTo(COURT.centerX - 46, backboardY);
+  ctx.lineTo(COURT.centerX + 46, backboardY);
   ctx.stroke();
   ctx.strokeStyle = 'rgba(246, 201, 100, .95)';
   ctx.lineWidth = 8;
   ctx.beginPath();
-  ctx.arc(COURT.centerX, y, 43, 0, Math.PI * 2);
+  ctx.arc(COURT.centerX, y, 54, 0, Math.PI * 2);
   ctx.stroke();
   ctx.strokeStyle = 'rgba(255, 250, 232, .6)';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(COURT.centerX, y, 29, 0, Math.PI * 2);
+  ctx.arc(COURT.centerX, y, 36, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 }
@@ -130,34 +107,18 @@ function drawBall(ctx: CanvasRenderingContext2D, ball: BallState, now: number): 
 }
 
 export function renderCourt(ctx: CanvasRenderingContext2D, state: MatchState, now: number): void {
-  const background = ctx.createLinearGradient(0, 0, COURT.width, COURT.height);
-  background.addColorStop(0, '#4e8c74');
-  background.addColorStop(0.48, '#3f8068');
-  background.addColorStop(1, '#34735f');
-  ctx.fillStyle = background;
+  ctx.fillStyle = '#204568';
   ctx.fillRect(0, 0, COURT.width, COURT.height);
 
   ctx.save();
   roundRectPath(ctx, COURT_EDGE, COURT_EDGE, COURT.width - COURT_EDGE * 2, COURT.height - COURT_EDGE * 2, 15);
   ctx.clip();
-  ctx.fillStyle = 'rgba(244, 206, 115, .095)';
-  ctx.fillRect(COURT_EDGE, COURT_EDGE, COURT.width - COURT_EDGE * 2, COURT.halfwayY - COURT_EDGE);
-  ctx.fillStyle = 'rgba(118, 202, 210, .085)';
-  ctx.fillRect(COURT_EDGE, COURT.halfwayY, COURT.width - COURT_EDGE * 2, COURT.height / 2 - COURT_EDGE);
-  ctx.strokeStyle = 'rgba(246, 248, 238, .16)';
-  ctx.lineWidth = 1;
-  for (let x = 44; x < COURT.width; x += 42) {
-    ctx.beginPath();
-    ctx.moveTo(x, COURT_EDGE);
-    ctx.lineTo(x, COURT.height - COURT_EDGE);
-    ctx.stroke();
-  }
   ctx.restore();
 
   ctx.save();
   roundRectPath(ctx, COURT_EDGE, COURT_EDGE, COURT.width - COURT_EDGE * 2, COURT.height - COURT_EDGE * 2, 15);
-  ctx.strokeStyle = 'rgba(247, 249, 237, .85)';
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(248, 249, 244, .78)';
+  ctx.lineWidth = 2;
   ctx.stroke();
   drawCourtMarkings(ctx);
   ctx.restore();
@@ -166,15 +127,6 @@ export function renderCourt(ctx: CanvasRenderingContext2D, state: MatchState, no
   drawHoop(ctx, 'south');
 
   ctx.save();
-  ctx.font = '700 13px "DM Sans", sans-serif';
-  ctx.letterSpacing = '1.5px';
-  ctx.textAlign = 'left';
-  ctx.fillStyle = 'rgba(249, 250, 235, .75)';
-  ctx.fillText('NORTH', 37, 56);
-  ctx.textAlign = 'right';
-  ctx.fillText('SOUTH', COURT.width - 37, COURT.height - 36);
-  ctx.restore();
-
   if (state.phase === 'resetting') {
     const alpha = 0.24 + Math.sin(now / 45) * 0.035;
     ctx.fillStyle = `rgba(28, 46, 38, ${alpha})`;
