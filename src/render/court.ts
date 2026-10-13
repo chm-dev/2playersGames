@@ -69,12 +69,12 @@ function drawHoop(ctx: CanvasRenderingContext2D, side: Side): void {
   ctx.strokeStyle = 'rgba(246, 201, 100, .95)';
   ctx.lineWidth = 8;
   ctx.beginPath();
-  ctx.ellipse(COURT.centerX, y, 43, 13, 0, 0, Math.PI * 2);
+  ctx.arc(COURT.centerX, y, 43, 0, Math.PI * 2);
   ctx.stroke();
   ctx.strokeStyle = 'rgba(255, 250, 232, .6)';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.ellipse(COURT.centerX, y, 29, 8, 0, 0, Math.PI * 2);
+  ctx.arc(COURT.centerX, y, 29, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 }

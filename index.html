@@ -35,6 +35,7 @@
           <div class="court-frame">
             <canvas id="court" aria-label="Basketball court. Touch or click the ball in either half, then flick to shoot."></canvas>
             <div class="court-hint" id="court-hint" aria-hidden="true">TOUCH BALL  /  FLICK TO SHOOT</div>
+            <button class="mobile-settings-button" id="open-settings" type="button" aria-label="Open physics settings" aria-controls="tuning-overlay" aria-expanded="false">&#9881;</button>
           </div>
           <div class="match-footer">
             <span class="status-light"></span><span id="interaction-hint">Pick up the ball on your side</span>
@@ -42,16 +43,20 @@
           </div>
         </section>
 
-        <aside class="tuning-panel" aria-labelledby="tuning-title">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">PHYSICS LAB</p>
-              <h1 id="tuning-title">Tune the feel</h1>
+        <div class="tuning-overlay" id="tuning-overlay" aria-hidden="false">
+          <aside class="tuning-panel" aria-labelledby="tuning-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">PHYSICS LAB</p>
+                <h1 id="tuning-title">Tune the feel</h1>
+              </div>
+              <div class="panel-actions">
+                <button class="reset-tuning" id="reset-tuning" type="button" title="Reset physics values">Reset</button>
+                <button class="panel-close" id="close-settings" type="button" aria-label="Close physics settings">&times;</button>
+              </div>
             </div>
-            <button class="reset-tuning" id="reset-tuning" type="button" title="Reset physics values">Reset</button>
-          </div>
-          <p class="panel-copy">Adjust a value, then throw. Changes take effect immediately.</p>
-          <div class="tuning-controls">
+            <p class="panel-copy">Adjust a value, then throw. Changes take effect immediately.</p>
+            <div class="tuning-controls">
             <label class="tuning-control" for="gravity">
               <span class="control-heading"><span>Gravity</span><output id="gravity-value">520</output></span>
               <span class="control-description">Flight arc and hang time</span>
@@ -76,10 +81,12 @@
               <input id="bounce" type="range" min="0.08" max="0.72" step="0.02" value="0.34" />
               <span class="range-labels"><span>Dead</span><span>Live</span></span>
             </label>
-          </div>
-          <div class="tuning-note"><span class="note-symbol">↗</span><span>Tap and hold the ball. Flick in the direction you want it to travel.</span></div>
-          <div class="keyboard-note"><span class="keycap">R</span> Reset match</div>
-        </aside>
+            </div>
+            <div class="tuning-note"><span class="note-symbol">↗</span><span>Tap and hold the ball. Flick in the direction you want it to travel.</span></div>
+            <div class="keyboard-note"><span class="keycap">R</span> Reset match</div>
+            <button class="mobile-new-game" id="mobile-new-game" type="button">Start a new match</button>
+          </aside>
+        </div>
       </main>
       <footer class="site-footer"><span>PHASE 01 <span class="footer-separator">/</span> LOCAL PLAY</span><span>Ball flight · bounce · touch response</span></footer>
     </div>

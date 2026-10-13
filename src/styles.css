@@ -69,7 +69,9 @@ button { color: inherit; }
 .match-footer > span:last-child { font-size: 9px; font-weight: 800; letter-spacing: .07em; }
 
 .tuning-panel { align-self: center; padding: 23px 22px 18px; background: rgba(251, 252, 248, .87); border: 1px solid #dfe5dc; border-top: 3px solid var(--coral); box-shadow: 0 9px 25px rgba(46, 66, 53, .06); }
+.tuning-overlay { display: contents; }
 .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.panel-actions { display: flex; align-items: center; gap: 8px; }
 .eyebrow { margin: 0 0 3px; color: #a2604d; font-size: 9px; font-weight: 800; letter-spacing: .14em; }
 h1 { margin: 0; font: 600 29px/1 'Barlow Condensed', sans-serif; letter-spacing: 0; }
 .reset-tuning { padding: 5px 8px; border: 1px solid #dbe1d9; background: transparent; border-radius: 2px; color: #657168; font-size: 10px; font-weight: 700; cursor: pointer; }
@@ -87,6 +89,7 @@ input[type='range']::-moz-range-thumb { width: 10px; height: 10px; border: 2px s
 .note-symbol { flex: 0 0 auto; color: #df765a; font-size: 16px; font-weight: 700; }
 .keyboard-note { margin-top: 13px; color: #96a097; font-size: 10px; }
 .keycap { display: inline-grid; place-items: center; width: 19px; height: 18px; margin-right: 5px; border: 1px solid #d8ded6; border-radius: 2px; color: #66736a; background: white; font: 700 10px 'DM Sans', sans-serif; }
+.mobile-settings-button, .panel-close, .mobile-new-game { display: none; }
 .site-footer { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 13px 0 17px; display: flex; justify-content: space-between; border-top: 1px solid #dfe4dc; color: #89938b; font-size: 9px; font-weight: 600; letter-spacing: .04em; }
 .footer-separator { padding: 0 5px; color: var(--coral); }
 
@@ -96,23 +99,31 @@ input[type='range']::-moz-range-thumb { width: 10px; height: 10px; border: 2px s
 }
 
 @media (max-width: 760px) {
-  .topbar { height: 57px; grid-template-columns: 1fr auto; padding: 0 16px; }
-  .phase-tag { display: none; }
-  .reset-button { padding: 7px 9px; font-size: 11px; }
-  .workspace { width: min(100% - 24px, 480px); padding: 13px 0 20px; grid-template-columns: 1fr; gap: 17px; }
-  .score-header { margin-bottom: 8px; }
-  .team-score strong { font-size: 32px; }
-  .court-frame { width: min(100%, calc((100svh - 215px) * .6)); min-width: 250px; }
-  .match-footer { min-height: 28px; }
-  .tuning-panel { padding: 17px 17px 15px; }
+  html, body, #app { width: 100%; height: 100%; }
+  html, body { overflow: hidden; overscroll-behavior: none; }
+  body { min-height: 0; background: var(--court-deep); }
+  #app { min-height: 0; }
+  .topbar, .match-footer, .site-footer { display: none; }
+  .workspace { width: 100%; height: 100vh; height: 100dvh; margin: 0; padding: 0; display: block; }
+  .game-column { width: 100%; height: 100%; }
+  .score-header { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); left: 12px; display: flex; justify-content: space-between; width: calc(100% - 72px); margin: 0; pointer-events: none; }
+  .team-score { gap: 7px; }
+  .team-score strong { color: #fffdf5; font-size: 32px; text-shadow: 0 1px 5px rgba(18, 43, 34, .45); }
+  .team-name { color: rgba(255, 255, 255, .9); font-size: 9px; }
+  .match-state { display: none; }
+  .court-frame { position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; margin: 0; border: 0; border-radius: 0; box-shadow: none; aspect-ratio: auto; }
+  #court { touch-action: none; }
+  .court-hint { bottom: max(16px, env(safe-area-inset-bottom)); }
+  .mobile-settings-button { position: absolute; z-index: 3; top: max(12px, env(safe-area-inset-top)); right: 12px; display: grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 2px solid rgba(255, 255, 255, .9); border-radius: 50%; color: #fffdf5; background: #d94c42; box-shadow: 0 2px 10px rgba(20, 36, 28, .35); font-size: 21px; line-height: 1; cursor: pointer; touch-action: manipulation; }
+  .tuning-overlay { position: fixed; z-index: 10; inset: 0; display: none; place-items: center; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); background: rgba(15, 34, 27, .68); backdrop-filter: blur(4px); overscroll-behavior: contain; }
+  .tuning-overlay.is-open { display: grid; }
+  .tuning-panel { width: min(100%, 460px); max-height: 100%; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 17px 17px 15px; }
+  .panel-close { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid #dbe1d9; border-radius: 50%; color: #657168; background: transparent; font-size: 23px; line-height: 1; cursor: pointer; }
+  .mobile-new-game { display: block; width: 100%; margin-top: 16px; padding: 10px; border: 0; border-radius: 2px; color: white; background: #326f5d; font-size: 12px; font-weight: 700; cursor: pointer; }
   .tuning-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; row-gap: 14px; }
   .tuning-note { margin-top: 15px; }
-  .site-footer { width: calc(100% - 32px); font-size: 8px; }
 }
 
 @media (max-width: 380px) {
-  .workspace { width: calc(100% - 18px); }
-  .court-frame { width: min(100%, calc((100svh - 208px) * .6)); min-width: 230px; }
-  .match-state { font-size: 7px; padding-inline: 6px; }
   .tuning-panel { padding-inline: 13px; }
 }

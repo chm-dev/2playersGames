@@ -14,6 +14,9 @@ function required<T extends Element>(selector: string): T {
 }
 
 const canvas = required<HTMLCanvasElement>('#court');
+const tuningOverlay = required<HTMLDivElement>('#tuning-overlay');
+const settingsButton = required<HTMLButtonElement>('#open-settings');
+const closeSettingsButton = required<HTMLButtonElement>('#close-settings');
 const context = canvas.getContext('2d');
 if (!context) throw new Error('Canvas 2D is not available');
 
@@ -125,6 +128,32 @@ canvas.addEventListener('pointerup', finishPointer);
 canvas.addEventListener('pointercancel', finishPointer);
 
 required<HTMLButtonElement>('#new-game').addEventListener('click', () => simulation.newMatch());
+required<HTMLButtonElement>('#mobile-new-game').addEventListener('click', () => {
+	simulation.newMatch();
+	closeSettings();
+});
+
+function closeSettings(): void {
+	tuningOverlay.classList.remove('is-open');
+	tuningOverlay.setAttribute('aria-hidden', 'true');
+	settingsButton.setAttribute('aria-expanded', 'false');
+	settingsButton.focus();
+}
+
+settingsButton.addEventListener('click', () => {
+	tuningOverlay.classList.add('is-open');
+	tuningOverlay.setAttribute('aria-hidden', 'false');
+	settingsButton.setAttribute('aria-expanded', 'true');
+	closeSettingsButton.focus();
+});
+closeSettingsButton.addEventListener('click', closeSettings);
+tuningOverlay.addEventListener('click', (event) => {
+	if (event.target === tuningOverlay) closeSettings();
+});
+window.addEventListener('keydown', (event) => {
+	if (event.key === 'Escape' && tuningOverlay.classList.contains('is-open')) closeSettings();
+});
+
 required<HTMLButtonElement>('#reset-tuning').addEventListener('click', () => {
 	for (const key of Object.keys(inputs) as Array<keyof PhysicsTuning>) {
 		inputs[key].value = String(initialTuning[key]);
