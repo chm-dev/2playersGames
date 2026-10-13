@@ -133,6 +133,21 @@ describe('local touch and flick simulation', () => {
     expect(game.state.ball.flightLocked).toBe(false);
   });
 
+  it('boosts a missed shot that clips the hoop rim', () => {
+    const game = new GameSimulation(() => 0.2);
+    const ball = game.state.ball;
+    game.tryGrab({ x: ball.x, y: ball.y });
+    game.moveHeldBall({ x: COURT.centerX + 40, y: 519 });
+    expect(game.release(0, 600)).toBe('shot');
+    const launchSpeed = Math.hypot(ball.vx, ball.vy);
+
+    for (let frame = 0; frame < 100 && ball.vy > 0; frame += 1) game.tick(1 / 60);
+
+    expect(game.state.score.north).toBe(0);
+    expect(ball.vy).toBeLessThan(0);
+    expect(Math.hypot(ball.vx, ball.vy)).toBeGreaterThan(launchSpeed);
+  });
+
   it('scores a north-bound shot when it passes the visible hoop plane', () => {
     const game = new GameSimulation(() => 0.8);
     const ball = game.state.ball;

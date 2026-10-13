@@ -250,9 +250,19 @@ export class GameSimulation {
   private bounceFromGoalLine(previousVisualY: number): void {
     const ball = this.state.ball;
     const visualY = ball.y - ball.z;
+    const visualRadius = COURT.ballRadius + Math.min(ball.z * 0.035, 12);
     const crossedTop = previousVisualY > COURT.hoopTopY && visualY <= COURT.hoopTopY;
     const crossedBottom = previousVisualY < COURT.hoopBottomY && visualY >= COURT.hoopBottomY;
     if (!crossedTop && !crossedBottom) return;
+    if (this.isRimImpact(visualY, visualRadius)) {
+      const hoopY = crossedTop ? COURT.hoopTopY : COURT.hoopBottomY;
+      ball.y = hoopY + ball.z + (crossedTop ? 1 : -1);
+      ball.vx = -ball.vx * COURT.rimBounce;
+      ball.vy = -ball.vy * COURT.rimBounce;
+      Body.setPosition(this.ballBody, { x: ball.x, y: ball.y });
+      Body.setVelocity(this.ballBody, { x: ball.vx / MATTER_TICKS_PER_SECOND, y: ball.vy / MATTER_TICKS_PER_SECOND });
+      return;
+    }
     const hoopLane = Math.abs(ball.x - COURT.centerX) <= COURT.hoopGap / 2 - COURT.ballRadius * 0.5;
     if (hoopLane) {
       const safeY = crossedTop ? COURT.hoopTopY + ball.z + 1 : COURT.hoopBottomY + ball.z - 1;
@@ -281,17 +291,31 @@ export class GameSimulation {
       && visualY - visualRadius < northEdge;
     const crossedSouth = previousVisualY + previousVisualRadius <= southEdge
       && visualY + visualRadius > southEdge;
+    const rimImpact = this.isRimImpact(visualY, visualRadius);
     if (crossedNorth && ball.vy < 0) {
       ball.y = northEdge + visualRadius + ball.z;
-      ball.vy = Math.abs(ball.vy) * COURT.wallBounce;
+      ball.vy = Math.abs(ball.vy) * (rimImpact ? COURT.rimBounce : COURT.wallBounce);
     } else if (crossedSouth && ball.vy > 0) {
       ball.y = southEdge - visualRadius + ball.z;
-      ball.vy = -Math.abs(ball.vy) * COURT.wallBounce;
+      ball.vy = -Math.abs(ball.vy) * (rimImpact ? COURT.rimBounce : COURT.wallBounce);
     } else {
       return;
     }
+    if (rimImpact) ball.vx = -ball.vx * COURT.rimBounce;
     Body.setPosition(this.ballBody, { x: ball.x, y: ball.y });
     Body.setVelocity(this.ballBody, { x: ball.vx / MATTER_TICKS_PER_SECOND, y: ball.vy / MATTER_TICKS_PER_SECOND });
+  }
+
+  private isRimImpact(visualY: number, visualRadius: number): boolean {
+    const ball = this.state.ball;
+    const lateralOffset = Math.abs(ball.x - COURT.centerX);
+    if (!ball.flightLocked || lateralOffset <= COURT.hoopScoreRadius) return false;
+
+    const topDistance = Math.hypot(lateralOffset, visualY - COURT.hoopTopY);
+    const bottomDistance = Math.hypot(lateralOffset, visualY - COURT.hoopBottomY);
+    const contactDistance = visualRadius + 4;
+    return Math.abs(topDistance - COURT.hoopRimRadius) <= contactDistance
+      || Math.abs(bottomDistance - COURT.hoopRimRadius) <= contactDistance;
   }
 
   private awardPoint(side: Side): void {

@@ -46,12 +46,12 @@ function drawHoop(ctx: CanvasRenderingContext2D, side: Side): void {
   ctx.strokeStyle = 'rgba(246, 201, 100, .95)';
   ctx.lineWidth = 8;
   ctx.beginPath();
-  ctx.arc(COURT.centerX, y, 54, 0, Math.PI * 2);
+  ctx.arc(COURT.centerX, y, COURT.hoopRimRadius, 0, Math.PI * 2);
   ctx.stroke();
   ctx.strokeStyle = 'rgba(255, 250, 232, .6)';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(COURT.centerX, y, 36, 0, Math.PI * 2);
+  ctx.arc(COURT.centerX, y, COURT.hoopRimRadius * 2 / 3, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 }

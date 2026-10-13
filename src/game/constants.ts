@@ -9,11 +9,13 @@ export const COURT = {
   hoopBottomY: 928,
   hoopGap: 104,
   hoopScoreRadius: 14,
+  hoopRimRadius: 54,
   hoopRimHeight: 28,
   hoopMaxHeight: 112,
   ballRadius: 40,
   wallThickness: 36,
   wallBounce: 0.84,
+  rimBounce: 1.12,
 } as const;
 
 export const DEFAULT_TUNING: Readonly<PhysicsTuning> = {
